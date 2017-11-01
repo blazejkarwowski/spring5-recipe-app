@@ -46,11 +46,33 @@ public class Ingredient {
         this.amount = amount;
     }
 
+
+    public void setAmount(Integer amount) {
+        this.amount = new BigDecimal(amount);
+    }
+
+
+    public void setAmount(Double amount) {
+        this.amount = new BigDecimal(amount);
+    }
+
     public Recipe getRecipe() {
         return recipe;
     }
 
     public void setRecipe(Recipe recipe) {
         this.recipe = recipe;
+    }
+
+    public UnitOfMeasure getUom() {
+        return uom;
+    }
+
+    public void setUom(UnitOfMeasure uom) {
+        this.uom = uom;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = new BigDecimal(amount);
     }
 }
