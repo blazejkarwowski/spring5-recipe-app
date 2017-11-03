@@ -24,8 +24,8 @@ import java.util.Set;
 @Component
 public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
-    private static final String TABLESPOON = "Tablespoon";
-    private static final String PIECE = "Piece";
+    private static final String TABLESPOON = "getOrAddUOM(TABLESPOON)";
+    private static final String PIECE = "getOrAddUOM(PIECE)";
     private static final String DASH = "Dash";
     private static final String TEASPOON = "Teaspoon";
     private static final String CUP = "Cup";
@@ -48,7 +48,8 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
         perfectGuacamole.setPrepTime(10 * 60);
         perfectGuacamole.setDifficulty(Difficulty.EASY);
         perfectGuacamole.setServings(4);
-        perfectGuacamole.setDescription("Guacamole, a dip made from avocados, is originally from Mexico. The name is derived from two Aztec Nahuatl words—ahuacatl (avocado) and molli (sauce).\n" +
+        perfectGuacamole.setDescription("Perfect Guacamole");
+        perfectGuacamole.setSource("Guacamole, a dip made from avocados, is originally from Mexico. The name is derived from two Aztec Nahuatl words—ahuacatl (avocado) and molli (sauce).\n" +
                 "\n" +
                 "All you really need to make guacamole is ripe avocados and salt. After that, a little lime or lemon juice—a splash of acidity to balance the richness of the avocado. Then comes chopped cilantro, chiles, onion, and tomato, if you want.\n" +
                 "\n" +
@@ -80,20 +81,22 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
                 "To extend a limited supply of avocados, add either sour cream or cottage cheese to your guacamole dip. Purists may be horrified, but so what? It tastes great.\n" +
                 "\n" +
                 "For a deviled egg version with guacamole, try our Guacamole Deviled Eggs!\n");
+        notes.setRecipe(perfectGuacamole);
         perfectGuacamole.setNotes(notes);
         Set<Ingredient> ingredients = new HashSet<>();
-        //ingredient.setRecipe(perfectGuacamole);
-        ingredients.add(newIngredient("ripe avocados", "2", PIECE));
+        ingredients.add(new Ingredient("ripe avocados", "2", getOrAddUOM(PIECE)));
 
-        ingredients.add(newIngredient("Kosher salt", "0.5", TEASPOON));
-        ingredients.add(newIngredient("fresh lime juice or lemon juice", "1", TABLESPOON));//1 Tbsp of fresh lime juice or lemon juice
-        ingredients.add(newIngredient("minced red onion or thinly sliced green onion", "2", TABLESPOON));//2 Tbsp to 1/4 cup of minced red onion or thinly sliced green onion
-        ingredients.add(newIngredient("serrano chiles, stems and seeds removed, minced", "2", PIECE));//1-2 serrano chiles, stems and seeds removed, minced
+        ingredients.add(new Ingredient("Kosher salt", "0.5", getOrAddUOM(TEASPOON)));
+        ingredients.add(new Ingredient("fresh lime juice or lemon juice", "1", getOrAddUOM(TABLESPOON)));
+        ingredients.add(new Ingredient("minced red onion or thinly sliced green onion", "2", getOrAddUOM(TABLESPOON)));
+        ingredients.add(new Ingredient("serrano chiles, stems and seeds removed, minced", "2", getOrAddUOM(PIECE)));
 
-        ingredients.add(newIngredient("cilantro (leaves and tender stems), finely chopped", "2", TABLESPOON));//2 tablespoons cilantro (leaves and tender stems), finely chopped
-        ingredients.add(newIngredient("freshly grated black pepper", "2", DASH));//A dash of freshly grated black pepper
-        ingredients.add(newIngredient("ripe tomato, seeds and pulp removed, chopped", "0.5", PIECE));//1/2 ripe tomato, seeds and pulp removed, chopped
-
+        ingredients.add(new Ingredient("cilantro (leaves and tender stems), finely chopped", "2", getOrAddUOM(TABLESPOON)));
+        ingredients.add(new Ingredient("freshly grated black pepper", "2", getOrAddUOM(DASH)));
+        ingredients.add(new Ingredient("ripe tomato, seeds and pulp removed, chopped", "0.5", getOrAddUOM(PIECE)));
+        ingredients.stream().forEach((Ingredient ingredient) -> {
+            ingredient.setRecipe(perfectGuacamole);
+        });
         perfectGuacamole.setIngredients(ingredients);
 
         perfectGuacamole.setImage(getImageFromUrl("http://assets.simplyrecipes.com/wp-content/uploads/2009/05/guacamole-520-b.jpg"));
@@ -107,7 +110,8 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
         chickenTacos.setPrepTime(10 * 60);
         chickenTacos.setDifficulty(Difficulty.EASY);
         chickenTacos.setServings(4);
-        chickenTacos.setDescription("\n" +
+        chickenTacos.setDescription("Spicy Grilled Chicken Tacos");
+        chickenTacos.setSource("\n" +
                 "Spicy Grilled Chicken Tacos\n" +
                 "by Sally Vargas on May 22, 2017\n" +
                 "Spicy grilled chicken tacos! Quick marinade, then grill. Ready in about 30 minutes. Great for a quick weeknight dinner, backyard cookouts, and tailgate parties.\n" +
@@ -131,7 +135,6 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
                 "\n" +
                 "You could also easily double or even triple this recipe for a larger party. A taco and a cold beer on a warm day? Now that’s living!");
         notes = new Notes();
-        notes.setRecipe(chickenTacos);
         notes.setRecipeNotes("1 Prepare a gas or charcoal grill for medium-high, direct heat.\n" +
                 "\n" +
                 "2 Make the marinade and coat the chicken: In a large bowl, stir together the chili powder, oregano, cumin, sugar, salt, garlic and orange zest. Stir in the orange juice and olive oil to make a loose paste. Add the chicken to the bowl and toss to coat all over.\n" +
@@ -148,33 +151,31 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
                 "\n" +
                 "5 Assemble the tacos: Slice the chicken into strips. On each tortilla, place a small handful of arugula. Top with chicken slices, sliced avocado, radishes, tomatoes, and onion slices. Drizzle with the thinned sour cream. Serve with lime wedges.\n");
         chickenTacos.setNotes(notes);
-        ingredients = new HashSet<>();
-        //ingredient.setRecipe(chickenTacos);
-        ingredients.add(newIngredient("ripe avocados", "2", PIECE));
+
+        chickenTacos.addIngredient(new Ingredient("ripe avocados", "2", getOrAddUOM(PIECE)));
 
 
-        ingredients.add(newIngredient("ancho chili powder", "2", TABLESPOON));//2 tablespoons ancho chili powder
-        ingredients.add(newIngredient("dried oregano", "1", TEASPOON));//1 teaspoon dried oregano
-        ingredients.add(newIngredient("dried cumin", "1", TEASPOON));//1 teaspoon dried cumin
-        ingredients.add(newIngredient("sugar", "1", TEASPOON));//1 teaspoon sugar
-        ingredients.add(newIngredient("salt", "0.5", TEASPOON));//1/2 teaspoon salt
-        ingredients.add(newIngredient("clove garlic, finely chopped", "1", PIECE));//1 clove garlic, finely chopped
-        ingredients.add(newIngredient("finely grated orange zest", "1", TABLESPOON));//1 tablespoon finely grated orange zest
-        ingredients.add(newIngredient("fresh-squeezed orange juice", "3", PIECE));//3 tablespoons fresh-squeezed orange juice
-        ingredients.add(newIngredient("olive oil", "2", TABLESPOON));//2 tablespoons olive oil
-        ingredients.add(newIngredient("skinless, boneless chicken thighs (1 1/4 pounds)", "6", PIECE));//4 to 6 skinless, boneless chicken thighs (1 1/4 pounds)
-        ingredients.add(newIngredient("small corn tortillas", "8", PIECE));//8 small corn tortillas
-        ingredients.add(newIngredient("cups packed baby arugula (3 ounces)", "3", CUP));//3 cups packed baby arugula (3 ounces)
-        ingredients.add(newIngredient("medium ripe avocados, sliced", "3", PIECE));//2 medium ripe avocados, sliced
-        ingredients.add(newIngredient("radishes, thinly sliced", "4", PIECE));//4 radishes, thinly sliced
-        ingredients.add(newIngredient("cherry tomatoes, halved", "0.5", PINT));//1/2 pint cherry tomatoes, halved
-        ingredients.add(newIngredient("red onion, thinly sliced", "0.25", PIECE));//1/4 red onion, thinly sliced
-        ingredients.add(newIngredient("roughly chopped cilantro", "1", PIECE));//Roughly chopped cilantro
-        ingredients.add(newIngredient("sour cream thinned with 1/4 cup milk", "1", CUP));//1/2 cup sour cream thinned with 1/4 cup milk
-        ingredients.add(newIngredient("lime, cut into wedges", "1", PIECE));//1 lime, cut into wedges
+        chickenTacos.addIngredient(new Ingredient("ancho chili powder", "2", getOrAddUOM(TABLESPOON)));
+        chickenTacos.addIngredient(new Ingredient("dried oregano", "1", getOrAddUOM(TEASPOON)));
+        chickenTacos.addIngredient(new Ingredient("dried cumin", "1", getOrAddUOM(TEASPOON)));
+        chickenTacos.addIngredient(new Ingredient("sugar", "1", getOrAddUOM(TEASPOON)));
+        chickenTacos.addIngredient(new Ingredient("salt", "0.5", getOrAddUOM(TEASPOON)));
+        chickenTacos.addIngredient(new Ingredient("clove garlic, finely chopped", "1", getOrAddUOM(PIECE)));
+        chickenTacos.addIngredient(new Ingredient("finely grated orange zest", "1", getOrAddUOM(TABLESPOON)));
+        chickenTacos.addIngredient(new Ingredient("fresh-squeezed orange juice", "3", getOrAddUOM(PIECE)));
+        chickenTacos.addIngredient(new Ingredient("olive oil", "2", getOrAddUOM(TABLESPOON)));
+        chickenTacos.addIngredient(new Ingredient("skinless, boneless chicken thighs (1 1/4 pounds)", "6", getOrAddUOM(PIECE)));
+        chickenTacos.addIngredient(new Ingredient("small corn tortillas", "8", getOrAddUOM(PIECE)));
+        chickenTacos.addIngredient(new Ingredient("cups packed baby arugula (3 ounces)", "3", getOrAddUOM(CUP)));
+        chickenTacos.addIngredient(new Ingredient("medium ripe avocados, sliced", "3", getOrAddUOM(PIECE)));
+        chickenTacos.addIngredient(new Ingredient("radishes, thinly sliced", "4", getOrAddUOM(PIECE)));
+        chickenTacos.addIngredient(new Ingredient("cherry tomatoes, halved", "0.5", getOrAddUOM(PINT)));
+        chickenTacos.addIngredient(new Ingredient("red onion, thinly sliced", "0.25", getOrAddUOM(PIECE)));
+        chickenTacos.addIngredient(new Ingredient("roughly chopped cilantro", "1", getOrAddUOM(PIECE)));
+        chickenTacos.addIngredient(new Ingredient("sour cream thinned with 1/4 cup milk", "1", getOrAddUOM(CUP)));
+        chickenTacos.addIngredient(new Ingredient("lime, cut into wedges", "1", getOrAddUOM(PIECE)));
 
         chickenTacos.setImage(getImageFromUrl("http://www.simplyrecipes.com/wp-content/uploads/2017/05/2017-05-29-GrilledChickenTacos-3.jpg"));
-
         chickenTacos.setIngredients(ingredients);
         recipeRepository.save(chickenTacos);
     }
@@ -216,14 +217,5 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
             unitOfMeasureRepository.save(unitOfMeasure);
             return unitOfMeasure;
         });
-    }
-
-    private Ingredient newIngredient(String description, String amount, String uom) {
-        Ingredient ingredient;
-        ingredient = new Ingredient();
-        ingredient.setDescription(description);
-        ingredient.setAmount(amount);
-        ingredient.setUom(getOrAddUOM(uom));
-        return ingredient;
     }
 }

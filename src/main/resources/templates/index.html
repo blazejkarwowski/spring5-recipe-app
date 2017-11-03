@@ -67,6 +67,17 @@
 
     <div class="starter-template">
         <h1>My recipies</h1>
+
+        <div class="card" style="width: 20rem;">
+            <ul class="list-group list-group-flush">
+                <li th:each="recipe : ${recipes}" class="list-group-item">
+                    <span th:text="${recipe.description}" class="recipe-description"></span>
+                    <div th:each="category: ${recipe.categories}" class="categories">
+                        <span th:text="${category.description}"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 
 

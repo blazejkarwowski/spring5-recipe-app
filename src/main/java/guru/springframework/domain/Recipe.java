@@ -1,6 +1,7 @@
 package guru.springframework.domain;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -14,11 +15,12 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
+
     private String description;
     private Integer prepTime;
     private Integer cookTime;
     private Integer servings;
+    @Lob
     private String source;
     private String url;
 
@@ -108,6 +110,7 @@ public class Recipe {
     }
 
     public void setNotes(Notes notes) {
+        notes.setRecipe(this);
         this.notes = notes;
     }
 
@@ -133,5 +136,13 @@ public class Recipe {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories;
+    }
+
+    public void addIngredient(Ingredient ingredient) {
+        if (ingredients == null) {
+            ingredients = new HashSet<>();
+        }
+        ingredient.setRecipe(this);
+        ingredients.add(ingredient);
     }
 }
