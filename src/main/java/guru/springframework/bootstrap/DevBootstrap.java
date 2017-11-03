@@ -4,10 +4,15 @@ import guru.springframework.domain.*;
 import guru.springframework.repositories.CategoryRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,10 +27,11 @@ import java.util.Set;
  * Project: spring5-recipe-app
  */
 @Component
-public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> {
+@Slf4j
+public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent>, ResourceLoaderAware {
 
-    private static final String TABLESPOON = "getOrAddUOM(TABLESPOON)";
-    private static final String PIECE = "getOrAddUOM(PIECE)";
+    private static final String TABLESPOON = "Tablespoon";
+    private static final String PIECE = "Piece";
     private static final String DASH = "Dash";
     private static final String TEASPOON = "Teaspoon";
     private static final String CUP = "Cup";
@@ -33,6 +39,7 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
     private RecipeRepository recipeRepository;
     private CategoryRepository categoryRepository;
     private UnitOfMeasureRepository unitOfMeasureRepository;
+    private ResourceLoader resourceLoader;
 
     public DevBootstrap(RecipeRepository recipeRepository, CategoryRepository categoryRepository, UnitOfMeasureRepository unitOfMeasureRepository) {
         this.recipeRepository = recipeRepository;
@@ -41,6 +48,7 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
     }
 
     @Override
+    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
         Recipe perfectGuacamole = new Recipe();
         perfectGuacamole.setCategories(Collections.singleton(getOrAddCategory("Mexican")));
@@ -99,7 +107,11 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
         });
         perfectGuacamole.setIngredients(ingredients);
 
-        perfectGuacamole.setImage(getImageFromUrl("http://assets.simplyrecipes.com/wp-content/uploads/2009/05/guacamole-520-b.jpg"));
+        try {
+            perfectGuacamole.setImage(IOUtils.toByteArray(resourceLoader.getResource("classpath:images/PerfectGuacamole.jpg").getInputStream()));
+        } catch (IOException e) {
+            log.error("Can't load image", e);
+        }
 
         recipeRepository.save(perfectGuacamole);
 
@@ -175,7 +187,11 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
         chickenTacos.addIngredient(new Ingredient("sour cream thinned with 1/4 cup milk", "1", getOrAddUOM(CUP)));
         chickenTacos.addIngredient(new Ingredient("lime, cut into wedges", "1", getOrAddUOM(PIECE)));
 
-        chickenTacos.setImage(getImageFromUrl("http://www.simplyrecipes.com/wp-content/uploads/2017/05/2017-05-29-GrilledChickenTacos-3.jpg"));
+        try {
+            chickenTacos.setImage(IOUtils.toByteArray(resourceLoader.getResource("classpath:images/GrilledChickenTacos.jpg").getInputStream()));
+        } catch (IOException e) {
+            log.error("Can't load image", e);
+        }
         chickenTacos.setIngredients(ingredients);
         recipeRepository.save(chickenTacos);
     }
@@ -217,5 +233,10 @@ public class DevBootstrap implements ApplicationListener<ContextRefreshedEvent> 
             unitOfMeasureRepository.save(unitOfMeasure);
             return unitOfMeasure;
         });
+    }
+
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 }

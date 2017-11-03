@@ -2,6 +2,7 @@ package guru.springframework.controllers;
 
 
 import guru.springframework.repositories.RecipeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,8 @@ import java.io.ByteArrayInputStream;
  * Project: spring5-recipe-app
  */
 @Controller
+@Slf4j
 public class ImageController {
-
     private RecipeRepository recipeRepository;
 
     public ImageController(RecipeRepository recipeRepository) {
@@ -30,12 +31,7 @@ public class ImageController {
     @ResponseBody
     @RequestMapping(value = "/image", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<InputStreamResource> getImage(@RequestParam("id") Long recipeId) {
-        Byte[] img = recipeRepository.findById(recipeId).get().getImage();
-        byte[] image = new byte[img.length];
-        for (int i = 0; i < image.length; i++) {
-            image[i] = img[i];
-        }
-
+        byte[] image = recipeRepository.findById(recipeId).get().getImage();
         return ResponseEntity.ok().contentLength(image.length).contentType(MediaType.IMAGE_JPEG).body(new InputStreamResource(new ByteArrayInputStream(image)));
     }
 }
